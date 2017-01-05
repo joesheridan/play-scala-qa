@@ -2,7 +2,7 @@
 * This template takes a single argument, a String containing a
 * message to display.
 *@
-@(question: Question)
+@(question: Question, answers: Seq[Answer])
 
 @*
 * Call the `main` template with two arguments. The first
@@ -15,4 +15,16 @@
 
 <p>@question.Description</p>
 
+<h2>Answers</h2>
+<ul>
+    @for(answer <- answers) {
+    <li>@answer.Description</li>
+    }
+</ul>
+
+<h2>Post an Answer</h2>
+<form method="POST">
+    <textarea name="answer" rows="4" cols="50" placeholder="Type your answer here"></textarea>
+    <button type="submit">Submit</button>
+</form>
 }

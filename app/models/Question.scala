@@ -2,6 +2,7 @@ package models
 
 import javax.inject._
 import anorm._
+import scala.util.{Try, Success, Failure}
 
 /**
   * Created by joe on 30/12/2016.
@@ -18,11 +19,13 @@ class QuestionService @Inject() (db: play.api.db.Database) {
     */
   def onStartUp = {
     // create the table if it doesn't exist
-    println("creating table:"+createTable())
+    println("creating questions table:"+createTable())
 
     // populate test question § §data if none exists
-    if (findAll.length == 0) addDummyQuestionData
-
+    findAll match {
+      case Success(qs) => {} // do nothing
+      case Failure(e) => addDummyQuestionData
+    }
   }
 
   def addDummyQuestionData = {
@@ -36,7 +39,7 @@ class QuestionService @Inject() (db: play.api.db.Database) {
 
   def createTable(): Boolean = {
     db.withConnection { implicit connection =>
-      SQL("CREATE TABLE IF NOT EXISTS QUESTIONS(ID INT PRIMARY KEY, Description VARCHAR(255))").execute()
+      SQL("CREATE TABLE IF NOT EXISTS QUESTIONS(ID INT AUTO_INCREMENT PRIMARY KEY, Description VARCHAR(255))").execute()
     }
   }
 
@@ -48,54 +51,37 @@ class QuestionService @Inject() (db: play.api.db.Database) {
   /**
   * Retrieve all questions.
   */
-  def findAll: Seq[Question] = {
-    try {
-      db.withConnection { implicit connection =>
+  def findAll: Try[Seq[Question]] = {
+      Try(db.withConnection { implicit connection =>
         SQL("select * from QUESTIONS").as(questionParser.*)
-      }
-    } catch {
-      case e: Exception => {
-        println("exception "+e)
-        return Seq.empty[Question]
-      }
-    }
+      })
   }
 
   /**
     * Retrieve a question by ID.
     */
-  def findByID(questionID:Int): Option[Question] = {
-    try {
-      db.withConnection { implicit connection =>
-        Some(SQL("select * from QUESTIONS where ID = {questionID}").on('questionID -> questionID).as(questionParser.single))
-      }
-    } catch {
-      case e: Exception => {
-        println("exception "+e)
-        return None
-      }
-    }
+  def findByID(questionID:Int): Try[Question] = {
+    Try(db.withConnection { implicit connection =>
+      SQL("select * from QUESTIONS where ID = {questionID}").on('questionID -> questionID).as(questionParser.single)
+    })
   }
 
   /**
   * Create a Question.
   */
-  def create(question: Question): Question = {
+  def create(q: Question): Try[Option[Long]] = {
     println("creating question")
-    db.withConnection { implicit connection =>
+    Try(db.withConnection { implicit connection =>
       SQL(
         """
-          insert into questions values (
-            {ID}, {description}
+          insert into questions (Description) values (
+             {description}
           )
         """
       ).on(
-        'ID -> question.ID,
-        'description -> question.Description
-      ).executeUpdate()
+        'description -> q.Description
+      ).executeInsert()
 
-      question
-
-    }
+    })
   }
 }
