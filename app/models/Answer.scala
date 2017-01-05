@@ -23,7 +23,7 @@ class AnswerService @Inject() (db: play.api.db.Database) {
     // create the table if it doesn't exist
     println("creating answer table:" + createTable())
 
-    // populate test answer § §data if none exists
+    // populate test answer data if none exists
     if (findAll.length == 0) addDummyAnswerData
 
   }
