@@ -15,7 +15,7 @@
 
 <ul>
     @for(question <- questions) {
-        <li>@question.Description</li>
+    <li><a href="/question/@question.ID">@question.Description</a></li>
     }
 </ul>
 }

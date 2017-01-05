@@ -3,7 +3,7 @@
 # ~~~~
 
 # Questions routes
-
+GET     /                           controllers.QuestionController.list
 GET     /questions/list             controllers.QuestionController.list
 GET     /questions/add             controllers.QuestionController.displayAddNew
 POST    /questions/add             controllers.QuestionController.createQuestion
