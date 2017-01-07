@@ -6,8 +6,9 @@ sites using the Play Framework in Scala.
 
 Technologies Used
 =================
-Scala 2.11.8
+Scala 2.11
 Play Framework 2.5.10
+Anorm 2.5.0
 H2 SQL database
 SBT 0.13.11
 IntelliJ IDEA

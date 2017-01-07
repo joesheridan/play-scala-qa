@@ -23,7 +23,8 @@ class QuestionService @Inject() (db: play.api.db.Database) {
 
     // populate test question § §data if none exists
     findAll match {
-      case Success(qs) => {} // do nothing
+      case Success(Nil) => { println("no questions found, adding dummy questions"); addDummyQuestionData }
+      case Success(_) => { println("some questions found, doing nothing:"); }
       case Failure(e) => addDummyQuestionData
     }
   }
